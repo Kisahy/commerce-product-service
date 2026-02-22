@@ -1,16 +1,25 @@
 package com.kisahy.commerce.product.application.service;
 
 import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
+import com.kisahy.commerce.product.application.port.out.LoadProductPort;
 import com.kisahy.commerce.product.application.port.out.SaveProductPort;
 import com.kisahy.commerce.product.domain.model.Product;
 import org.springframework.stereotype.Service;
 
-@Service
-public class ProductService implements CreateProductUseCase {
-    private final SaveProductPort saveProductPort;
+import java.util.List;
 
-    public ProductService(SaveProductPort saveProductPort) {
+@Service
+public class ProductService implements CreateProductUseCase, GetProductsUseCase {
+    private final SaveProductPort saveProductPort;
+    private final LoadProductPort loadProductPort;
+
+    public ProductService(
+            SaveProductPort saveProductPort,
+            LoadProductPort loadProductPort
+    ) {
         this.saveProductPort = saveProductPort;
+        this.loadProductPort = loadProductPort;
     }
 
     @Override
@@ -25,5 +34,10 @@ public class ProductService implements CreateProductUseCase {
         Product savedProduct = saveProductPort.save(product);
 
         return savedProduct.getId();
+    }
+
+    @Override
+    public List<Product> getProducts() {
+        return loadProductPort.loadAll();
     }
 }
