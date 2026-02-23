@@ -7,6 +7,7 @@ import com.kisahy.commerce.product.application.port.out.SaveProductPort;
 import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
 import com.kisahy.commerce.product.domain.model.Product;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class ProductService implements
     }
 
     @Override
+    @Transactional
     public Long createProduct(CreateProductCommand command) {
         Product product = Product.create(
                 command.name(),
@@ -47,6 +49,7 @@ public class ProductService implements
     }
 
     @Override
+    @Transactional
     public void updateProduct(Long id, UpdateProductCommand command) {
         Product product = findProductById(id);
         product.update(command.name(), command.description(), command.price());
@@ -54,17 +57,20 @@ public class ProductService implements
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long id) {
         findProductById(id);
         deleteProductPort.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getProducts() {
         return loadProductPort.loadAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Product getProduct(Long id) {
         return findProductById(id);
     }
