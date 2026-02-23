@@ -7,6 +7,7 @@ import com.kisahy.commerce.product.domain.model.Product;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPort {
@@ -30,5 +31,11 @@ public class ProductPersistenceAdapter implements SaveProductPort, LoadProductPo
                 .stream()
                 .map(ProductEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<Product> loadById(Long id) {
+        return productJpaRepository.findById(id)
+                .map(ProductEntity::toDomain);
     }
 }

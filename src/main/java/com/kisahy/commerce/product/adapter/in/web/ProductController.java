@@ -1,6 +1,7 @@
 package com.kisahy.commerce.product.adapter.in.web;
 
 import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.GetProductUseCase;
 import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
 import com.kisahy.commerce.product.domain.model.Product;
 import jakarta.validation.Valid;
@@ -15,13 +16,16 @@ import java.util.List;
 public class ProductController {
     private final CreateProductUseCase createProductUseCase;
     private final GetProductsUseCase getProductsUseCase;
+    private final GetProductUseCase getProductUseCase;
 
     public ProductController(
             CreateProductUseCase createProductUseCase,
-            GetProductsUseCase getProductsUseCase
+            GetProductsUseCase getProductsUseCase,
+            GetProductUseCase getProductUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
         this.getProductsUseCase = getProductsUseCase;
+        this.getProductUseCase = getProductUseCase;
     }
 
     @PostMapping
@@ -50,5 +54,15 @@ public class ProductController {
                 .toList();
 
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProduct(
+            @PathVariable
+            Long id
+    ) {
+        ProductResponse response = ProductResponse.from(getProductUseCase.getProduct(id));
+
+        return ResponseEntity.ok(response);
     }
 }
