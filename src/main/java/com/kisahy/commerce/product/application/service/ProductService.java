@@ -4,6 +4,7 @@ import com.kisahy.commerce.product.application.port.in.*;
 import com.kisahy.commerce.product.application.port.out.DeleteProductPort;
 import com.kisahy.commerce.product.application.port.out.LoadProductPort;
 import com.kisahy.commerce.product.application.port.out.SaveProductPort;
+import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
 import com.kisahy.commerce.product.domain.model.Product;
 import org.springframework.stereotype.Service;
 
@@ -71,7 +72,7 @@ public class ProductService implements
     private Product findProductById(Long id) {
         return loadProductPort.loadById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("상품을 찾을 수 없습니다.")
+                        new ProductNotFoundException(id)
                 );
     }
 }
