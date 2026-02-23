@@ -1,15 +1,20 @@
 package com.kisahy.commerce.product.application.service;
 
-import com.kisahy.commerce.product.application.port.in.*;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.DeleteProductUseCase;
+import com.kisahy.commerce.product.application.port.in.GetProductUseCase;
+import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
+import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
 import com.kisahy.commerce.product.application.port.out.DeleteProductPort;
 import com.kisahy.commerce.product.application.port.out.LoadProductPort;
 import com.kisahy.commerce.product.application.port.out.SaveProductPort;
 import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
 import com.kisahy.commerce.product.domain.model.Product;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class ProductService implements
@@ -17,8 +22,7 @@ public class ProductService implements
         GetProductsUseCase,
         GetProductUseCase,
         UpdateProductUseCase,
-        DeleteProductUseCase
-{
+        DeleteProductUseCase {
     private final SaveProductPort saveProductPort;
     private final LoadProductPort loadProductPort;
     private final DeleteProductPort deleteProductPort;
@@ -77,8 +81,6 @@ public class ProductService implements
 
     private Product findProductById(Long id) {
         return loadProductPort.loadById(id)
-                .orElseThrow(() ->
-                        new ProductNotFoundException(id)
-                );
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }

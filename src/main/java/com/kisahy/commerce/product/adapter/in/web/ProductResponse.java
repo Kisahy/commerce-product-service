@@ -1,8 +1,8 @@
 package com.kisahy.commerce.product.adapter.in.web;
 
-import com.kisahy.commerce.product.domain.model.Product;
-
 import java.time.LocalDateTime;
+
+import com.kisahy.commerce.product.domain.model.Product;
 
 public record ProductResponse(
         Long id,

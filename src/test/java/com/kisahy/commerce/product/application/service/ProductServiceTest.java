@@ -1,12 +1,9 @@
 package com.kisahy.commerce.product.application.service;
 
-import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
-import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
-import com.kisahy.commerce.product.application.port.out.DeleteProductPort;
-import com.kisahy.commerce.product.application.port.out.LoadProductPort;
-import com.kisahy.commerce.product.application.port.out.SaveProductPort;
-import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
-import com.kisahy.commerce.product.domain.model.Product;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
+import com.kisahy.commerce.product.application.port.out.DeleteProductPort;
+import com.kisahy.commerce.product.application.port.out.LoadProductPort;
+import com.kisahy.commerce.product.application.port.out.SaveProductPort;
+import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
+import com.kisahy.commerce.product.domain.model.Product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -28,18 +29,29 @@ import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
-    @Mock private SaveProductPort saveProductPort;
-    @Mock private DeleteProductPort deleteProductPort;
-    @Mock private LoadProductPort loadProductPort;
+    @Mock
+    private SaveProductPort saveProductPort;
+    @Mock
+    private DeleteProductPort deleteProductPort;
+    @Mock
+    private LoadProductPort loadProductPort;
 
-    @InjectMocks private ProductService productService;
+    @InjectMocks
+    private ProductService productService;
 
     private Product sampleProduct;
 
     @BeforeEach
     void setUp() {
         sampleProduct = new Product(
-                1L, "테스트", "설명", 1000.0, 100, 1, LocalDateTime.now(), LocalDateTime.now()
+                1L,
+                "테스트 상품",
+                "설명",
+                100000.0,
+                100,
+                1,
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
     }
 
@@ -49,7 +61,12 @@ public class ProductServiceTest {
         given(saveProductPort.save(any(Product.class))).willReturn(sampleProduct);
 
         Long id = productService.createProduct(
-                new CreateProductUseCase.CreateProductCommand("테스트 상품", "설명", 10000.0, 100)
+                new CreateProductUseCase.CreateProductCommand(
+                        "테스트 상품",
+                        "설명",
+                        10000.0,
+                        100
+                )
         );
 
         assertThat(id).isEqualTo(1L);
@@ -62,7 +79,10 @@ public class ProductServiceTest {
         given(loadProductPort.loadById(1L)).willReturn(Optional.of(sampleProduct));
         given(saveProductPort.save(any(Product.class))).willReturn(sampleProduct);
 
-        productService.updateProduct(1L, new UpdateProductUseCase.UpdateProductCommand("변경명", "변경설명", 20000.0));
+        productService.updateProduct(
+                1L,
+                new UpdateProductUseCase.UpdateProductCommand("변경명", "변경설명", 20000.0)
+        );
 
         then(saveProductPort).should(times(1)).save(any(Product.class));
     }
@@ -73,7 +93,10 @@ public class ProductServiceTest {
         given(loadProductPort.loadById(999L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-                productService.updateProduct(999L, new UpdateProductUseCase.UpdateProductCommand("변경명", "변경설명", 20000.0))
+                productService.updateProduct(
+                        999L,
+                        new UpdateProductUseCase.UpdateProductCommand("변경명", "변경설명", 20000.0)
+                )
         ).isInstanceOf(ProductNotFoundException.class);
     }
 

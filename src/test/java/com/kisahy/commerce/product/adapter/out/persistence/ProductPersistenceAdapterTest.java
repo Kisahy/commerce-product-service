@@ -1,7 +1,8 @@
 package com.kisahy.commerce.product.adapter.out.persistence;
 
-import com.kisahy.commerce.product.application.port.out.LoadProductPort;
-import com.kisahy.commerce.product.domain.model.Product;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
-import java.util.Optional;
+import com.kisahy.commerce.product.domain.model.Product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,9 +30,7 @@ public class ProductPersistenceAdapterTest {
 
     @Autowired
     private ProductPersistenceAdapter productPersistenceAdapter;
-    @Autowired
-    private LoadProductPort loadProductPort;
-
+    
     @Test
     @DisplayName("save: 신규 상품 저장 시 ID가 할당된 상품을 반환한다")
     void save_newProduct_assignsId() {

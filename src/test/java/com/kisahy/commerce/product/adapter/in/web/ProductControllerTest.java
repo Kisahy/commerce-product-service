@@ -1,9 +1,8 @@
 package com.kisahy.commerce.product.adapter.in.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kisahy.commerce.product.application.port.in.*;
-import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
-import com.kisahy.commerce.product.domain.model.Product;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,29 +11,56 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.DeleteProductUseCase;
+import com.kisahy.commerce.product.application.port.in.GetProductUseCase;
+import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
+import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
+import com.kisahy.commerce.product.domain.exception.ProductNotFoundException;
+import com.kisahy.commerce.product.domain.model.Product;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProductController.class)
 public class ProductControllerTest {
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @MockitoBean private CreateProductUseCase createProductUseCase;
-    @MockitoBean private UpdateProductUseCase updateProductUseCase;
-    @MockitoBean private DeleteProductUseCase deleteProductUseCase;
-    @MockitoBean private GetProductUseCase getProductUseCase;
-    @MockitoBean private GetProductsUseCase getProductsUseCase;
+    @MockitoBean
+    private CreateProductUseCase createProductUseCase;
+    @MockitoBean
+    private UpdateProductUseCase updateProductUseCase;
+    @MockitoBean
+    private DeleteProductUseCase deleteProductUseCase;
+    @MockitoBean
+    private GetProductUseCase getProductUseCase;
+    @MockitoBean
+    private GetProductsUseCase getProductsUseCase;
 
     private Product sampleProduct() {
         return new Product(
-                1L, "테스트 상품", "설명", 1000.0, 100, 1, LocalDateTime.now(), LocalDateTime.now()
+                1L,
+                "테스트 상품",
+                "설명",
+                1000.0,
+                100,
+                1,
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
     }
 
@@ -44,10 +70,15 @@ public class ProductControllerTest {
         given(createProductUseCase.createProduct(any())).willReturn(1L);
 
         mockMvc.perform(post("/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        new CreateProductRequest("테스트 상품", "설명", 1000.0, 100)
-                )))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new CreateProductRequest(
+                                        "테스트 상품",
+                                        "설명",
+                                        1000.0,
+                                        100
+                                )
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/products/1"));
     }
@@ -58,7 +89,13 @@ public class ProductControllerTest {
         mockMvc.perform(post("/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new CreateProductRequest("", "설명", 10000.0, 100))))
+                                new CreateProductRequest(
+                                        "",
+                                        "설명",
+                                        10000.0,
+                                        100
+                                )
+                        )))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
     }
@@ -71,7 +108,8 @@ public class ProductControllerTest {
         mockMvc.perform(put("/products/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new UpdateProductRequest("수정명", "수정설명", 20000.0))))
+                                new UpdateProductRequest("수정명", "수정설명", 20000.0)
+                        )))
                 .andExpect(status().isNoContent());
     }
 
@@ -84,7 +122,8 @@ public class ProductControllerTest {
         mockMvc.perform(put("/products/999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new UpdateProductRequest("수정명", "수정설명", 20000.0))))
+                                new UpdateProductRequest("수정명", "수정설명", 20000.0)
+                        )))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("PRODUCT_NOT_FOUND"));
     }
