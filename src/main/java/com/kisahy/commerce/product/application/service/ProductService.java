@@ -3,6 +3,7 @@ package com.kisahy.commerce.product.application.service;
 import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
 import com.kisahy.commerce.product.application.port.in.GetProductUseCase;
 import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
+import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
 import com.kisahy.commerce.product.application.port.out.LoadProductPort;
 import com.kisahy.commerce.product.application.port.out.SaveProductPort;
 import com.kisahy.commerce.product.domain.model.Product;
@@ -14,7 +15,8 @@ import java.util.List;
 public class ProductService implements
         CreateProductUseCase,
         GetProductsUseCase,
-        GetProductUseCase
+        GetProductUseCase,
+        UpdateProductUseCase
 {
     private final SaveProductPort saveProductPort;
     private final LoadProductPort loadProductPort;
@@ -42,12 +44,23 @@ public class ProductService implements
     }
 
     @Override
+    public void updateProduct(Long id, UpdateProductCommand command) {
+        Product product = findProductById(id);
+        product.update(command.name(), command.description(), command.price());
+        saveProductPort.save(product);
+    }
+
+    @Override
     public List<Product> getProducts() {
         return loadProductPort.loadAll();
     }
 
     @Override
     public Product getProduct(Long id) {
+        return findProductById(id);
+    }
+
+    private Product findProductById(Long id) {
         return loadProductPort.loadById(id)
                 .orElseThrow(() ->
                         new IllegalArgumentException("상품을 찾을 수 없습니다.")

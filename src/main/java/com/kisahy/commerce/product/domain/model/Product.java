@@ -50,6 +50,17 @@ public class Product {
         );
     }
 
+    public void update(
+            String name,
+            String description,
+            Double price
+    ) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
