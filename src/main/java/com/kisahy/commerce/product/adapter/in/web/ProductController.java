@@ -1,9 +1,6 @@
 package com.kisahy.commerce.product.adapter.in.web;
 
-import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
-import com.kisahy.commerce.product.application.port.in.GetProductUseCase;
-import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
-import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.*;
 import com.kisahy.commerce.product.domain.model.Product;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +16,18 @@ public class ProductController {
     private final GetProductsUseCase getProductsUseCase;
     private final GetProductUseCase getProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
+    private final DeleteProductUseCase deleteProductUseCase;
 
     public ProductController(
             CreateProductUseCase createProductUseCase,
             GetProductsUseCase getProductsUseCase,
             GetProductUseCase getProductUseCase,
-            UpdateProductUseCase updateProductUseCase) {
+            UpdateProductUseCase updateProductUseCase, DeleteProductUseCase deleteProductUseCase) {
         this.createProductUseCase = createProductUseCase;
         this.getProductsUseCase = getProductsUseCase;
         this.getProductUseCase = getProductUseCase;
         this.updateProductUseCase = updateProductUseCase;
+        this.deleteProductUseCase = deleteProductUseCase;
     }
 
     @PostMapping
@@ -66,6 +65,15 @@ public class ProductController {
                 )
         );
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable
+            Long id
+    ) {
+        deleteProductUseCase.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 

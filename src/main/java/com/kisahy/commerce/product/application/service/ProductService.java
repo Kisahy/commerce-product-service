@@ -1,9 +1,7 @@
 package com.kisahy.commerce.product.application.service;
 
-import com.kisahy.commerce.product.application.port.in.CreateProductUseCase;
-import com.kisahy.commerce.product.application.port.in.GetProductUseCase;
-import com.kisahy.commerce.product.application.port.in.GetProductsUseCase;
-import com.kisahy.commerce.product.application.port.in.UpdateProductUseCase;
+import com.kisahy.commerce.product.application.port.in.*;
+import com.kisahy.commerce.product.application.port.out.DeleteProductPort;
 import com.kisahy.commerce.product.application.port.out.LoadProductPort;
 import com.kisahy.commerce.product.application.port.out.SaveProductPort;
 import com.kisahy.commerce.product.domain.model.Product;
@@ -16,17 +14,21 @@ public class ProductService implements
         CreateProductUseCase,
         GetProductsUseCase,
         GetProductUseCase,
-        UpdateProductUseCase
+        UpdateProductUseCase,
+        DeleteProductUseCase
 {
     private final SaveProductPort saveProductPort;
     private final LoadProductPort loadProductPort;
+    private final DeleteProductPort deleteProductPort;
 
     public ProductService(
             SaveProductPort saveProductPort,
-            LoadProductPort loadProductPort
+            LoadProductPort loadProductPort,
+            DeleteProductPort deleteProductPort
     ) {
         this.saveProductPort = saveProductPort;
         this.loadProductPort = loadProductPort;
+        this.deleteProductPort = deleteProductPort;
     }
 
     @Override
@@ -48,6 +50,12 @@ public class ProductService implements
         Product product = findProductById(id);
         product.update(command.name(), command.description(), command.price());
         saveProductPort.save(product);
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        findProductById(id);
+        deleteProductPort.deleteById(id);
     }
 
     @Override
